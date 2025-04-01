@@ -33,15 +33,27 @@ def get_delivery_option():
 
 
 def get_delivery_details():
-    """Get delivery address and phone number with input validation."""
-    address = input("Enter delivery address: ").strip()
-    if address == "":
-        print("Address cannot be empty.")
-        return get_delivery_details()
-    phone = input("Enter phone number: ").strip()
-    if phone == "":
-        print("Phone number cannot be empty.")
-        return get_delivery_details() 
+    """Get delivery address and phone number with robust input validation."""
+    while True:    # Loop until valid input is received
+        address = input("Enter delivery address: ").strip()
+        if address:  # Check if address is not empty
+            break  # Exit loop if address is valid
+        else:
+            print("Address cannot be empty. Please try again.")
+
+    while True:    # Loop until valid input is received
+        phone = input("Enter phone number: ").strip()
+        if not phone:  # Check if phone number is not empty
+            print("Phone number cannot be empty. Please try again.")
+            continue
+        if not phone.isdigit():
+            print("Phone number must contain only whole number till 9 ( 0 to 9 ). Please try again.")
+            continue
+        if len(phone) < 10 or len(phone) > 15:
+            print("Phone number must be between 10 and 15 digits. Please try again.")
+            continue
+        break
+
     return address, phone
 
 
@@ -56,7 +68,7 @@ def get_order_item(menu):
     while True:
         category = input("Enter quesadilla type (Regular/Gourmet, or 'done' to finish): ").title().strip()
         if category.lower() == "done":
-            return None, None, 0 #Returning 0 to indicate end of order, None for item name and None for price
+            return None, None, 0 #Returns 0 to indicate end of order, None for item name and None for price
 
         item_name = input("Enter quesadilla name: ").title().strip()
 

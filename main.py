@@ -7,7 +7,7 @@ import datetime
 def get_customer_name():
     """Get the customer's name with input validation."""
     while True:
-        name = input("Enter customer name: ").strip()  # removes any of the extra spaces from the name
+        name = input("Enter your name: ").strip()  # removes any of the extra spaces from the name
         name_without_spaces = name.replace(" ", "")  # removes spaces from the name
         if name_without_spaces and name_without_spaces.isalpha():   # checks if the name is not empty and contains only letters
             return name
@@ -28,19 +28,18 @@ def get_delivery_option():
 def get_delivery_details():
     """Get delivery address and phone number with robust input validation."""
     while True:
-        address = input("Enter delivery address: ").strip()
-        if address:  # Check if address is not empty
-            address_without_spaces = address.replace(" ", "")  # removes spaces from the address
-            if address_without_spaces.isalnum():  # checks if the address contains only letters and numbers
-                break
+        address = input("Enter your delivery address: ").strip()
+        if address:
+            good_chars = ""   # We'll build a new version of the address with refined characters
+            for char in address:   # Go through each letter/number/symbol in what they typed
+                if char.isalnum() or char.isspace() or char == "," or char == "." or char == "-" or char == "/":
+                    good_chars = good_chars + char  # Add this good character to our 'good_chars'
+            if good_chars:
+                break  # Yes! The address seems okay, let's move on
             else:
-                print("Address must contain only letters and numbers. Please try again.")
-                continue
-        if address == "":  # Check if address is not empty
-            print("Address cannot be empty. Please try again.")
-            continue
+                print("Your address needs to have at least one letter or number. Try again.")
         else:
-            print("Address cannot be empty. Please try again.")
+            print("You can't leave the address empty. Please type it in again.")
 
     while True:    # Loop until valid input is received
         phone = input("Enter phone number: ").strip()
@@ -83,12 +82,12 @@ def get_order_item(menu):
 
         found_item_2 = None
         for item in menu:
-            if item[0] == category and item[1] == item_name:
+            if item[1] == item_name:
                 found_item_2 = item
                 break
 
         if not found_item_2:
-            print("Invalid item.")
+            print("Invalid item. Please enter a valid quesadilla name.")
             continue
 
         try:
@@ -195,6 +194,9 @@ def main():
     delivery_charge = 5.00
 
     while True:
+        print("\n--- Welcome to Queenstown Quesadillas ---")  # Welcome message..
+        print("Please enter your details to place an order.")  # Prompt for customer details...
+        print("Note: Delivery incurs a charge of $5.00.")
         customer_name = get_customer_name()  # Get the customer's name
         delivery_option = get_delivery_option()
 

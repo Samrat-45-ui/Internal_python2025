@@ -7,7 +7,7 @@ import datetime
 def get_customer_name():
     """Get the customer's name with input validation."""
     while True:
-        name = input("Enter your name: ").strip()  # removes any of the extra spaces from the name
+        name = input("Enter your full name: ").strip()  # removes any of the extra spaces from the name
         name_without_spaces = name.replace(" ", "")  # removes spaces from the name
         if name_without_spaces and name_without_spaces.isalpha():   # checks if the name is not empty and contains only letters
             return name
@@ -35,7 +35,7 @@ def get_delivery_details():
                 if char.isalnum() or char.isspace() or char == "," or char == "." or char == "-" or char == "/":
                     good_chars = good_chars + char  # Add this good character to our 'good_chars'
             if good_chars:
-                break  # Yes! The address seems okay, let's move on
+                break  
             else:
                 print("Your address needs to have at least one letter or number. Try again.")
         else:
@@ -47,10 +47,10 @@ def get_delivery_details():
         if not phone:  # Check if phone number is not empty
             print("Phone number cannot be empty. Please try again.")
             continue
-        if not phone_without_spaces.isdigit():
-            print("Phone number must contain only digits (0 to 9). Please try again.")
+        if not phone_without_spaces.isdigit() or '+' in phone_without_spaces:  # Check if phone number contains only digits
+            print("Phone number must contain only digits (0 to 9) and cannot contain '+' or other characters. Please try again.")
             continue
-        if len(phone_without_spaces) < 10 or len(phone_without_spaces) > 15:
+        if len(phone_without_spaces) < 10 or len(phone_without_spaces) > 15:   # Check if phone number is between 10 and 15 digits
             print("Phone number must be between 10 and 15 digits. Please try again.")
             continue
         break
@@ -60,7 +60,7 @@ def get_delivery_details():
 def display_menu(menu):
     """Display the menu."""
     print("\n--- Menu --- ")
-    for item in menu:
+    for item in menu:   # Loop through each item in the menu and print it out
         print(f"- {item[0]} - {item[1]}: ${item[2]:.2f}")
 
 
@@ -92,8 +92,8 @@ def get_order_item(menu):
 
         try:
             quantity = int(input("Enter quantity: "))
-            if quantity <= 0:
-                print("Quantity must be greater than zero.")
+            if quantity <= 0 or quantity > 50:   # Check if quantity is a positive integer and not more than 50
+                print("Quantity must be greater than zero and not more than 50.")
                 continue
             return found_item_1[1], found_item_2[2], quantity
 
@@ -121,9 +121,9 @@ def display_order_summary(customer_name, order, total_cost, delivery_option, add
 
     print("\n--- Items Ordered ---")
     for item, price in order:
-        print(f"- {item}: ${price:.2f}")
+        print(f"- {item}: NZ${price:.2f}")   ## Print each item in the order with its price rounded to 2 decimal places
 
-    print(f"\nTotal Cost: ${total_cost:.2f}")
+    print(f"\nTotal Cost: NZ${total_cost:.2f}")
 
 
 def process_order(menu):
@@ -145,9 +145,9 @@ def confirm_order():
     """Confirm the order with the customer."""
     while True:
         confirm = input("\nConfirm order? (Y/N): ").upper().strip()
-        if confirm == "Y":
+        if confirm == "Y" or "Yes" in confirm:
             return True
-        elif confirm == "N":
+        elif confirm == "N" or "No" in confirm:
             return False
         else:
             print("Invalid input. Please enter 'Y' or 'N'.")
@@ -156,18 +156,23 @@ def confirm_order():
 def export_order_details(customer_name, order, total_cost, delivery_option, address, phone):
     """Export the order details to a file."""
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")  # Format the timestamp
-    filename = f"order_{customer_name.replace(' ', '_')}_{timestamp}.txt"
+    filename = f"order_{customer_name.replace(' ', '_')}_{timestamp}.txt"   # Create a filename with the customer's name and timestamp
+    try:
+        filename = filename.replace("/", "_")  # Replace any '/' in the filename with '_'
+    except Exception as e:
+        print(f"Error creating filename: {e}")
     try:
         with open(filename, "w") as f:
             f.write("--- Queenstown Quesadillas Order ---\n")
-            f.write(f"Date: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S %Z%z')}\n")
-            f.write(f"Customer Name: {customer_name}\n")
+            f.write(f"Date: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S %Z%z')}\n")   # Write the current date and time to the file also took a little help from YT
+            f.write(f"Customer Name: {customer_name}\n")  
             if delivery_option == "D":
                 f.write(f"Delivery Address: {address}\n")
                 f.write(f"Phone Number: {phone}\n")
                 f.write("Delivery Option: Delivery\n")
             else:
-                f.write("Delivery Option: Pick-up\n")
+                f.write("Delivery Option: Pick-up\n")   # Delivery option
+            f.write(f"Delivery Charge: ${5.00:.2f}\n")
             f.write("\n--- Items Ordered ---\n")
             for item, price in order:
                 f.write(f"- {item}: ${price:.2f}\n")
@@ -220,7 +225,7 @@ def main():
             else:
                 print("Order cancelled.")
 
-        if input("\nStart a new order? (Y/N): ").upper().strip() != "Y":
+        if input("\nStart a new/ next order? (Y/N): ").upper().strip() != "Y":
             print("Thank you for the order!")
             break
 
